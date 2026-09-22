@@ -5,62 +5,64 @@ export const SpaceCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const currentMount = mountRef.current;
+    if (!currentMount) return;
+
+    const width = window.innerWidth || 800;
+    const height = window.innerHeight || 600;
 
     // 1. Scene & Camera Setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
     camera.position.z = 5;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    if (mountRef.current) {
-      mountRef.current.appendChild(renderer.domElement);
+    // 2. WebGL Renderer
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      currentMount.appendChild(renderer.domElement);
+    } catch (e) {
+      console.warn('WebGL initialization failed, rendering fallback background:', e);
+      return;
     }
 
-    // 2. Starfield Generator
-    const starCount = 1500;
+    // 3. Starfield Particles
+    const starCount = 1200;
     const starGeometry = new THREE.BufferGeometry();
     const starPositions = new Float32Array(starCount * 3);
 
     for (let i = 0; i < starCount * 3; i++) {
-      starPositions[i] = (Math.random() - 0.5) * 100;
+      starPositions[i] = (Math.random() - 0.5) * 80;
     }
     starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    const starMaterial = new THREE.PointsMaterial({ color: 0x55ccff, size: 0.08 });
+    const starMaterial = new THREE.PointsMaterial({ color: 0x00f0ff, size: 0.07 });
     const stars = new THREE.Points(starGeometry, starMaterial);
     scene.add(stars);
 
-    // 3. Earth Sphere (Realistic Orbital Background)
-    const earthGeometry = new THREE.SphereGeometry(3.2, 64, 64);
-    const earthMaterial = new THREE.MeshPhongMaterial({
-      color: 0x1a4b8c,
-      emissive: 0x001122,
-      wireframe: false,
+    // 4. Planet Sphere
+    const earthGeometry = new THREE.SphereGeometry(3, 32, 32);
+    const earthMaterial = new THREE.MeshBasicMaterial({
+      color: 0x0a3c74,
+      wireframe: true,
     });
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-    earth.position.set(0, -3.8, 1);
+    earth.position.set(0, -3.5, 1);
     scene.add(earth);
 
-    // 4. Space Lighting
-    const dirLight = new THREE.DirectionalLight(0x00f0ff, 1.8);
-    dirLight.position.set(5, 3, 5);
-    scene.add(dirLight);
-    scene.add(new THREE.AmbientLight(0x112233));
-
     // 5. Animation Loop
-    let animationId: number;
+    let animationFrameId: number;
     const animate = () => {
-      animationId = requestAnimationFrame(animate);
-      earth.rotation.y += 0.0008;
-      stars.rotation.y += 0.0002;
+      animationFrameId = requestAnimationFrame(animate);
+      earth.rotation.y += 0.001;
+      stars.rotation.y += 0.0003;
       renderer.render(scene, camera);
     };
     animate();
 
-    // 6. Resize Handler
+    // 6. Handle Window Resizing
     const handleResize = () => {
+      if (!renderer) return;
       const w = window.innerWidth;
       const h = window.innerHeight;
       renderer.setSize(w, h);
@@ -70,11 +72,12 @@ export const SpaceCanvas: React.FC = () => {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      cancelAnimationFrame(animationId);
+      cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
-      if (mountRef.current) {
-        mountRef.current.innerHTML = '';
+      if (currentMount && renderer.domElement) {
+        currentMount.removeChild(renderer.domElement);
       }
+      renderer.dispose();
     };
   }, []);
 
