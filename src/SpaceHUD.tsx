@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchSpaceParticleData, ParticleTelemetry } from './nasaService';
 
 export const SpaceHUD: React.FC = () => {
+  const [telemetry, setTelemetry] = useState<ParticleTelemetry[]>([]);
   const [code, setCode] = useState<string>(
 `// NASA Space Particle Trajectory Elimination
 function mitigateRadiation(pathogen) {
@@ -11,13 +13,16 @@ function mitigateRadiation(pathogen) {
   );
   const [terminalOutput, setTerminalOutput] = useState<string>('ANALYSIS: IDLE');
 
+  useEffect(() => {
+    fetchSpaceParticleData().then((data) => setTelemetry(data));
+  }, []);
+
   const executeCode = () => {
     setTerminalOutput('COMPILING... PARTICLE MITIGATION VECTOR LOCKED. SHIELD STABLE.');
   };
 
   return (
     <div className="hud-overlay">
-      {/* Top Cockpit Header */}
       <header className="hud-header">
         <div className="status-badge">
           <span>HEALTH: <strong>92%</strong></span>
@@ -29,7 +34,7 @@ function mitigateRadiation(pathogen) {
         </div>
       </header>
 
-      {/* Main Floating Terminal Window */}
+      {/* Floating Code Editor */}
       <div className="floating-window">
         <div className="window-header">
           <span>RESEARCH [IDE] - RADIATION RISK SCRIPT</span>
@@ -53,14 +58,19 @@ function mitigateRadiation(pathogen) {
         </div>
       </div>
 
-      {/* Floating Mineral & Particle Telemetry HUD */}
+      {/* Real-time Telemetry Powered by NASA API */}
       <div className="floating-telemetry">
-        <h3>PARTICLE SPECTRUM</h3>
+        <h3>LIVE NASA PARTICLE STREAM</h3>
         <ul>
-          <li>Solar Protons: <span>38.2%</span></li>
-          <li>Alpha Particles: <span>22.1%</span></li>
-          <li>Cosmic Rays: <span>11.0%</span></li>
-          <li>Heavy Ions: <span>5.4%</span></li>
+          {telemetry.length > 0 ? (
+            telemetry.slice(0, 4).map((item, idx) => (
+              <li key={idx}>
+                {item.sourceType}: <span>{item.intensityScore}%</span>
+              </li>
+            ))
+          ) : (
+            <li>Connecting to NASA Feed...</li>
+          )}
         </ul>
         <div className="risk-level">BIOLOGICAL RISK: <strong>MODERATE</strong></div>
       </div>
