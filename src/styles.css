@@ -1,0 +1,239 @@
+/* ==========================================================================
+   Spacewarm - Orbital HUD & 3D Terminal Styling
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root, .app-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #030710;
+  color: #00f0ff;
+  font-family: 'Share Tech Mono', monospace;
+  user-select: none;
+}
+
+/* 3D WebGL Canvas Layer */
+.space-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Cockpit HUD Overlay */
+.hud-overlay {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    transparent 60%,
+    rgba(2, 10, 20, 0.7) 100%
+  );
+}
+
+/* Cockpit Header */
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(4, 20, 36, 0.65);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  padding: 12px 28px;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+}
+
+.hud-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 5px;
+  font-weight: 900;
+  text-shadow: 0 0 12px #00f0ff;
+}
+
+.status-badge {
+  font-size: 0.9rem;
+}
+
+.status-badge strong {
+  color: #55ffcc;
+  text-shadow: 0 0 8px #55ffcc;
+  margin-left: 6px;
+}
+
+.status-badge span {
+  margin-right: 20px;
+}
+
+/* Floating Space Terminal Window */
+.floating-window {
+  pointer-events: auto;
+  position: absolute;
+  top: 18%;
+  left: 8%;
+  width: 460px;
+  background: rgba(3, 15, 29, 0.88);
+  border: 1px solid #00f0ff;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+  backdrop-filter: blur(12px);
+  animation: orbitalFloat 6s ease-in-out infinite;
+}
+
+@keyframes orbitalFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(0.4deg);
+  }
+}
+
+.window-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(0, 240, 255, 0.18);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.window-controls span {
+  margin-left: 10px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.window-controls span:hover {
+  color: #ffffff;
+}
+
+.window-body {
+  padding: 16px;
+}
+
+/* Embedded IDE Code Editor */
+.code-editor {
+  width: 100%;
+  height: 190px;
+  background: rgba(0, 6, 14, 0.8);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  color: #55ffcc;
+  padding: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  border-radius: 4px;
+  resize: none;
+  outline: none;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.code-editor:focus {
+  border-color: #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.terminal-actions {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-execute {
+  background: #00f0ff;
+  color: #020b14;
+  border: none;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  letter-spacing: 1px;
+}
+
+.btn-execute:hover {
+  background: #ffffff;
+  box-shadow: 0 0 16px #00f0ff;
+}
+
+.terminal-log {
+  font-size: 0.75rem;
+  color: #ffaa00;
+  text-shadow: 0 0 6px rgba(255, 170, 0, 0.4);
+}
+
+/* Floating Space Telemetry Panel */
+.floating-telemetry {
+  pointer-events: auto;
+  position: absolute;
+  top: 20%;
+  right: 6%;
+  width: 300px;
+  background: rgba(3, 15, 29, 0.82);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 8px;
+  padding: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+  animation: orbitalFloat 7s ease-in-out infinite reverse;
+}
+
+.floating-telemetry h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+  padding-bottom: 6px;
+}
+
+.floating-telemetry ul {
+  list-style: none;
+}
+
+.floating-telemetry li {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.floating-telemetry li span {
+  color: #55ffcc;
+  font-weight: bold;
+}
+
+.risk-level {
+  margin-top: 14px;
+  font-size: 0.82rem;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0, 240, 255, 0.2);
+  color: #ffcc00;
+}
+
+.risk-level strong {
+  margin-left: 6px;
+  text-shadow: 0 0 6px #ffcc00;
+}
